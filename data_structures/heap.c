@@ -51,7 +51,7 @@ int main() {
   */
 
   int size = 0;
-  int *heap = (int *)malloc(size * sizeof(int));
+  int *heap = (int *)malloc(32 * sizeof(int));
   if (heap == NULL) {
     printf("Memory allocation failed\n");
     exit(1);
