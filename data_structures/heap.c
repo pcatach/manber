@@ -1,8 +1,17 @@
 /*
-Chapter 4, exercises 5 and 6
+Chapter 4, exercises 5, 6 and 12
 */
 #include <stdio.h>
 #include <stdlib.h>
+
+int *buildHeap() {
+  int *heap = (int *)malloc(32 * sizeof(int));
+  if (heap == NULL) {
+    printf("Memory allocation failed\n");
+    exit(1);
+  }
+  return heap;
+}
 
 void printHeap(int *heap, int size) {
   if (heap == NULL || size <= 0) {
@@ -16,8 +25,15 @@ void printHeap(int *heap, int size) {
   printf("%d\n", heap[size - 1]);
 }
 
+void swap(int *heap, int first, int second) {
+  int temp = heap[first];
+  heap[first] = heap[second];
+  heap[second] = temp;
+}
+
 int insertHeap(int *heap, int size, int value) {
   int current = size;
+  // bubble up
   while (current > 0) {
     // if parent is at n, children are at 2*n + 1 and 2*n + 2.
     int parent = (current - 1) / 2;
@@ -25,9 +41,7 @@ int insertHeap(int *heap, int size, int value) {
       break;
     }
 
-    // int temp = heap[current];
-    // heap[current] = heap[parent];
-    // heap[parent] = temp;
+    // swap(heap, current, parent);
     // can save an extra assignment if I just move the parent
     heap[current] = heap[parent];
 
@@ -37,33 +51,51 @@ int insertHeap(int *heap, int size, int value) {
   return size + 1;
 }
 
+int removeHeap(int *heap, int size, int *dest) {
+  // pop out max of heap
+  *dest = heap[0];
+  // replace with last leaf
+  heap[0] = heap[size - 1];
+  size -= 1;
+
+  int parent = 0;
+  int child = 1;
+
+  // flow down
+  while (child < size) {
+    // use max(child1, chil2)
+    if (heap[child] < heap[child + 1]) {
+      child = child + 1;
+    }
+
+    if (heap[parent] < heap[child]) {
+      swap(heap, parent, child);
+      parent = child;
+      child = 2 * child + 1;
+    } else {
+      break;
+    }
+  }
+
+  return size;
+}
+
 int main() {
-  /*
-             15
-      /               \
-     10                 14
-   /    \             /    \
-  7      9           11      13
- /  \    /  \       /  \    /  \
-1    4  3    8     2    6  5    12
+  int size1 = 0;
+  int *heap1 = buildHeap();
+  int size2 = 0;
+  int *heap2 = buildHeap();
 
-15, 10, 14, 7, 9, 11, 13, 1, 4, 3, 8, 2, 6, 5, 12
-*/
-
-  int size = 0;
-  int *heap = (int *)malloc(32 * sizeof(int));
-  if (heap == NULL) {
-    printf("Memory allocation failed\n");
-    exit(1);
+  for (int i = 1; i < 6; i++) {
+    size1 = insertHeap(heap1, size1, i);
+    size2 = insertHeap(heap2, size2, 2 * i);
   }
 
-  for (int i = 1; i < 16; i++) {
-    // printHeap(heap, size);
-    size = insertHeap(heap, size, i);
-  }
+  printHeap(heap1, size1);
+  printHeap(heap2, size2);
 
-  printHeap(heap, size);
-  free(heap);
+  free(heap1);
+  free(heap2);
 
   return 0;
 }
