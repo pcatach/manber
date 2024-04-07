@@ -17,25 +17,23 @@ void printHeap(int *heap, int size) {
 }
 
 int insertHeap(int *heap, int size, int value) {
-  printf("Inserting %d\n", value);
-  heap[size] = value;
-  if (size == 0) {
-    return size + 1;
-  }
-
   int current = size;
-  int parent = (current - 1) / 2;
+  while (current > 0) {
+    // if parent is at n, children are at 2*n + 1 and 2*n + 2.
+    int parent = (current - 1) / 2;
+    if (heap[parent] >= value) {
+      break;
+    }
 
-  // bubble up
-  while (heap[parent] < heap[current]) {
-    printf("Exchanging %d with %d\n", heap[current], heap[parent]);
-    int temp = heap[current];
+    // int temp = heap[current];
+    // heap[current] = heap[parent];
+    // heap[parent] = temp;
+    // can save an extra assignment if I just move the parent
     heap[current] = heap[parent];
-    heap[parent] = temp;
 
     current = parent;
-    parent = (current - 1) / 2;
   }
+  heap[current] = value;
   return size + 1;
 }
 
@@ -43,12 +41,14 @@ int main() {
   /*
              15
       /               \
-     14                 13
+     10                 14
    /    \             /    \
-  12      11         10      9
+  7      9           11      13
  /  \    /  \       /  \    /  \
-8    7  6    5     4    3  2    1
-  */
+1    4  3    8     2    6  5    12
+
+15, 10, 14, 7, 9, 11, 13, 1, 4, 3, 8, 2, 6, 5, 12
+*/
 
   int size = 0;
   int *heap = (int *)malloc(32 * sizeof(int));
@@ -58,7 +58,7 @@ int main() {
   }
 
   for (int i = 1; i < 16; i++) {
-    printHeap(heap, size);
+    // printHeap(heap, size);
     size = insertHeap(heap, size, i);
   }
 
