@@ -1,5 +1,5 @@
 /*
-Chapter 4, exercises 5, 6, 13
+Chapter 4, exercises 5, 6, 13, 14
 */
 #include <stdio.h>
 #include <stdlib.h>
@@ -92,6 +92,17 @@ void mergeHeaps(int *heap1, int *size1, int *heap2, int *size2) {
   }
 }
 
+void mergeKHeaps(int *merged_heap, int *merged_size, int **heaps_array,
+                 int *sizes_array, int k) {
+  // O(k * n * log(k * n))
+  for (int i = 0; i < k; i++) {
+    int *heap = heaps_array[i];
+    int size = sizes_array[i];
+
+    mergeHeaps(merged_heap, merged_size, heap, &size);
+  }
+}
+
 int main() {
   int size1 = 0;
   int *heap1 = buildHeap();
@@ -111,6 +122,35 @@ int main() {
 
   free(heap1);
   free(heap2);
+
+  printf("\n");
+
+  int merged_size = 0;
+  int *merged_heap = buildHeap();
+  int k = 6;
+  int **heaps_array = (int **)malloc(k * sizeof(int *));
+  int *sizes_array = (int *)malloc(k * sizeof(int));
+
+  for (int i = 0; i < k; i++) {
+    int size = 0;
+    int *heap = buildHeap();
+    for (int j = 10 * i; j < 10 * i + 3; j++) {
+      size = insertHeap(heap, size, j);
+    }
+
+    heaps_array[i] = heap;
+    sizes_array[i] = size;
+    printHeap(heap, size);
+  }
+
+  mergeKHeaps(merged_heap, &merged_size, heaps_array, sizes_array, k);
+  printHeap(merged_heap, merged_size);
+
+  for (int i = 0; i < k; i++) {
+    free(heaps_array[i]);
+  }
+  free(merged_heap);
+  free(sizes_array);
 
   return 0;
 }
