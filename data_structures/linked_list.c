@@ -27,6 +27,7 @@ void freeList(Element *head) {
 }
 
 void addElement(Element **head, int value) {
+  // O(n)
   // Pass by reference as we might need to change the head of the list.
   Element *new_element = (Element *)malloc(sizeof(Element));
   if (!new_element) {
@@ -48,6 +49,7 @@ void addElement(Element **head, int value) {
 }
 
 void deleteElement(struct Element **head, int index) {
+  // O(n)
   // Pass by reference because we might need to delete 'head'
   if (!*head || index < 0) {
     return;
@@ -68,6 +70,7 @@ void deleteElement(struct Element **head, int index) {
 }
 
 void reverseList(Element **head) {
+  // O(n)
   // Pass by reference as we'll have to change 'head'
   Element *temp = *head;
   Element *prev = NULL;

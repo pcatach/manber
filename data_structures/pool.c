@@ -16,12 +16,14 @@ void printPool(Pool *pool) {
 }
 
 void addJob(Pool *pool, int job) {
+  // O(1)
   int hashed_job = job % MAX_JOB;
   // printf("Hash of %d is %d\n", job, hashed_job);
   pool[hashed_job] = job;
 }
 
 void removeJob(Pool *pool, int *job) {
+  // O(n)
   for (int i = 0; i < MAX_JOB; i++) {
     if (pool[i] != 0) {
       *job = pool[i];

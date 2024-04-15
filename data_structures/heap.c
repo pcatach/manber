@@ -1,5 +1,5 @@
 /*
-Chapter 4, exercises 5, 6 and 12
+Chapter 4, exercises 5, 6, 13
 */
 #include <stdio.h>
 #include <stdlib.h>
@@ -32,6 +32,7 @@ void swap(int *heap, int first, int second) {
 }
 
 int insertHeap(int *heap, int size, int value) {
+  // O(log n)
   int current = size;
   // bubble up
   while (current > 0) {
@@ -52,6 +53,7 @@ int insertHeap(int *heap, int size, int value) {
 }
 
 int removeHeap(int *heap, int size, int *dest) {
+  // O(log n)
   // pop out max of heap
   *dest = heap[0];
   // replace with last leaf
@@ -80,6 +82,16 @@ int removeHeap(int *heap, int size, int *dest) {
   return size;
 }
 
+void mergeHeaps(int *heap1, int *size1, int *heap2, int *size2) {
+  // NOTE: will change heap1 and destroy heap2!
+  // O(m * log(n + m))
+  int current;
+  while (*size2 > 0) {
+    *size2 = removeHeap(heap2, *size2, &current);
+    *size1 = insertHeap(heap1, *size1, current);
+  }
+}
+
 int main() {
   int size1 = 0;
   int *heap1 = buildHeap();
@@ -87,12 +99,15 @@ int main() {
   int *heap2 = buildHeap();
 
   for (int i = 1; i < 6; i++) {
-    size1 = insertHeap(heap1, size1, i);
+    size1 = insertHeap(heap1, size1, 2 * i - 1);
     size2 = insertHeap(heap2, size2, 2 * i);
   }
 
   printHeap(heap1, size1);
   printHeap(heap2, size2);
+
+  mergeHeaps(heap1, &size1, heap2, &size2);
+  printHeap(heap1, size1);
 
   free(heap1);
   free(heap2);

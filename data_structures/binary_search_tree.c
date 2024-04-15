@@ -30,6 +30,7 @@ void freeNode(Node **node) {
 }
 
 void insertNode(Node **node, int value) {
+  // O(log n)
   if (!*node) {
     Node *new_node = (Node *)malloc(sizeof(Node));
     if (!node) {
@@ -51,6 +52,7 @@ void insertNode(Node **node, int value) {
 }
 
 Node *search(Node **node, int value) {
+  // O(log n)
   if (value == (*node)->value) {
     return *node;
   } else if (value <= (*node)->value) {
@@ -61,6 +63,7 @@ Node *search(Node **node, int value) {
 }
 
 Node *nonRecursiveSearch(Node **root, int value) {
+  // O(log n)
   Node *current = *root;
   while (current) {
     if (value == current->value) {
