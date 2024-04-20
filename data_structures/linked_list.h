@@ -8,7 +8,9 @@ typedef struct Element {
 
 void printList(Element *head);
 void freeList(Element *head);
-void addElement(Element **head, int value);
+void insertElement(Element **head, int value);
+Element *searchElement(Element *element, int value);
+Element *nonRecursiveSearchElement(Element *element, int value);
 void deleteElement(Element **head, int index);
 void reverseList(Element **head);
 

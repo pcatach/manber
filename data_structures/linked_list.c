@@ -2,7 +2,6 @@
 Chapter 4, exercises 1 and 2
 
 Implements a linked list with elements inserted at the end.
-To compile: gcc linked_list.c
 */
 #include "linked_list.h"
 #include <stdio.h>
@@ -26,9 +25,10 @@ void freeList(Element *head) {
   }
 }
 
-void addElement(Element **head, int value) {
+void insertElement(Element **head, int value) {
+  // insertElement needs to take an Element** instead of an Element*
+  // because it potentially modifies the head pointer itself
   // O(n)
-  // Pass by reference as we might need to change the head of the list.
   Element *new_element = (Element *)malloc(sizeof(Element));
   if (!new_element) {
     printf("Failed to allocate memory.\n");
@@ -39,32 +39,60 @@ void addElement(Element **head, int value) {
 
   if (!*head) {
     *head = new_element;
-  } else {
-    Element *current = *head;
-    while (current->next) {
-      current = current->next;
-    }
-    current->next = new_element;
+    return;
   }
+
+  Element *current = *head;
+  while (current->next) {
+    current = current->next;
+  }
+  current->next = new_element;
+}
+
+Element *searchElement(Element *element, int value) {
+  // O(n)
+  if (!element || value == element->value) {
+    return element;
+  }
+  return searchElement(element->next, value);
+}
+
+Element *nonRecursiveSearchElement(Element *head, int value) {
+  // O(n)
+  Element *current = head;
+  while (current) {
+    if (value == current->value) {
+      return current;
+    }
+    current = current->next;
+  }
+  return NULL;
 }
 
 void deleteElement(struct Element **head, int index) {
   // O(n)
-  // Pass by reference because we might need to delete 'head'
+  // takes an Element ** because it must be able to delete the head
   if (!*head || index < 0) {
     return;
   }
 
-  Element **current = head;
+  if (index == 0) {
+    Element *to_delete = *head;
+    *head = (*head)->next;
+    free(to_delete);
+    return;
+  }
+
+  Element *current = *head;
   int i = 0;
-  while (*current && i < index) {
-    current = &(*current)->next;
+  while (current && i < index - 1) {
+    current = current->next;
     i++;
   }
 
-  if (*current) {
-    Element *to_delete = *current; // save so we can free() later
-    *current = to_delete->next;
+  if (current && current->next) {
+    Element *to_delete = current->next; // save so we can free() later
+    current->next = to_delete->next;
     free(to_delete);
   }
 }
@@ -88,26 +116,40 @@ void reverseList(Element **head) {
   *head = prev;
 }
 
-// int main() {
-//   Element *head = NULL;
+int main() {
+  Element *head = NULL;
 
-//   addElement(&head, 0);
-//   addElement(&head, 1);
-//   addElement(&head, 2);
-//   addElement(&head, 3);
-//   printList(head);
-//   printf("Deleting -1\n");
-//   deleteElement(&head, -1);
-//   printList(head);
-//   printf("Deleting 3\n");
-//   deleteElement(&head, 3);
-//   printList(head);
+  insertElement(&head, 0);
+  insertElement(&head, 1);
+  insertElement(&head, 2);
+  insertElement(&head, 3);
+  printList(head);
 
-//   printf("Reversing list\n");
-//   reverseList(&head);
-//   printList(head);
+  int index = 5;
+  printf("Deleting %d\n", index);
+  deleteElement(&head, index);
+  printList(head);
+  printf("Deleting 3\n");
+  deleteElement(&head, 3);
+  printList(head);
 
-//   freeList(head);
+  printf("Reversing list\n");
+  reverseList(&head);
+  printList(head);
 
-//   return 0;
-// }
+  printf("Searching for 0\n");
+  Element *node_zero = searchElement(head, 0);
+  printList(node_zero);
+
+  printf("Searching for 1\n");
+  Element *node_one = nonRecursiveSearchElement(head, 1);
+  printList(node_one);
+
+  printf("Searching for 10\n");
+  Element *node_ten = nonRecursiveSearchElement(head, 10);
+  printList(node_ten);
+
+  freeList(head);
+
+  return 0;
+}
