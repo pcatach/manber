@@ -96,11 +96,69 @@ Node *nonRecursiveSearchNode(Node *root, int value) {
   return NULL;
 }
 
-void deleteNode(Node **root, int value) {
+Node *findNext(Node *root, int value) {
   // O(log n)
-  // if (!*root) {
-  //   return;
-  // }
+  // find the smallest key in the data structure that is greater than value
+}
+
+void deleteNode(Node **root, int value) {
+  // Note: we assume the root is never deleted
+  // O(log n)
+  if (!*root) {
+    return;
+  }
+
+  Node *parent = NULL;
+  Node *current = *root;
+  // find node
+  while (current) {
+    if (value == current->value) {
+      break;
+    } else if (value > current->value) {
+      parent = current;
+      current = current->right;
+    } else {
+      parent = current;
+      current = current->left;
+    }
+  }
+  // if couldn't find, return
+  if (!current)
+    return;
+
+  // cases for 0, 1 or 2 children
+  if (!current->left) {
+    if (value < parent->value) {
+      parent->left = current->right;
+    } else {
+      parent->right = current->right;
+    }
+  } else if (!current->right) {
+    if (value < parent->value) {
+      parent->left = current->left;
+    } else {
+      parent->left = current->left;
+    }
+  } else {
+    // two children case
+    // set node's value to the rightmost node in the node's left subtree
+    Node *rightmost_parent = current;
+    Node *rightmost = current->left;
+    while (rightmost->right) {
+      rightmost_parent = rightmost;
+      rightmost = rightmost->right;
+    }
+
+    current->value = rightmost->value;
+    if (rightmost_parent == current) {
+      rightmost_parent->left = NULL;
+    } else {
+      rightmost_parent->right = rightmost->right;
+    }
+    free(rightmost);
+    return;
+  }
+  free(current);
 }
 
 int main() {
@@ -114,52 +172,45 @@ int main() {
       1
   */
   Node *root = NULL;
-  insertNode(&root, 4);
-  insertNode(&root, 2);
-  insertNode(&root, 5);
-  insertNode(&root, 6);
-  insertNode(&root, 3);
-  insertNode(&root, 0);
-  insertNode(&root, 1);
+  int values[] = {4, 2, 5, 6, 3, 0, 1};
+  for (int i = 0; i < 7; i++) {
+    insertNode(&root, values[i]);
+  }
 
   printTree(root);
   printf("\n");
 
-  printf("Search for 2\n");
-  Node *node_two = searchNode(root, 2);
-  printTree(node_two);
-  printf("\n");
+  int search_values[] = {2, 7};
+  for (int i = 0; i < 2; i++) {
+    printf("Search for %d\n", search_values[i]);
+    Node *found = searchNode(root, search_values[i]);
+    printTree(found);
+    printf("\n");
+  }
 
-  printf("Nonrecursive search for 5\n");
-  Node *node_five = nonRecursiveSearchNode(root, 5);
-  printTree(node_five);
-  printf("\n");
-
-  printf("Search for 7\n");
-  Node *node_seven = searchNode(root, 7);
-  printTree(node_seven);
-  printf("\n");
-
-  printf("Nonrecursive search for 8\n");
-  Node *node_eight = nonRecursiveSearchNode(root, 8);
-  printTree(node_eight);
-  printf("\n");
+  int non_recursive_search_values[] = {5, 8};
+  for (int i = 0; i < 2; i++) {
+    printf("Non-recursive search for %d\n", non_recursive_search_values[i]);
+    Node *found = nonRecursiveSearchNode(root, non_recursive_search_values[i]);
+    printTree(found);
+    printf("\n");
+  }
 
   printf("Insert repeated 6\n");
   insertNode(&root, 6);
   printTree(root);
   printf("\n");
 
-  printf("Delete 7\n");
-  deleteNode(&root, 7);
-  printTree(root);
-  printf("\n");
+  int delete_values[] = {7, 5, 6, 2, 1};
+  for (int i = 0; i < 5; i++) {
+    printf("Delete %d\n", delete_values[i]);
+    deleteNode(&root, delete_values[i]);
+    printTree(root);
+    printf("\n");
+  }
 
-  printf("Delete 5\n");
-  deleteNode(&root, 5);
-  printTree(root);
-  printf("\n");
   /*
+  Delete 5
           4
         /   \
       2       6
@@ -167,13 +218,7 @@ int main() {
     0   3
      \
       1
-  */
-
-  printf("Delete 6\n");
-  deleteNode(&root, 6);
-  printTree(root);
-  printf("\n");
-  /*
+  Delete 6
           4
         /
       2
@@ -181,30 +226,19 @@ int main() {
     0   3
      \
       1
-  */
-
-  printf("Delete 2\n");
-  deleteNode(&root, 2);
-  printTree(root);
-  printf("\n");
-  /*
+  Delete 2
           4
         /
       1
      / \
     0   3
-  */
-
-  printf("Delete 1\n");
-  deleteNode(&root, 1);
-  printTree(root);
-  printf("\n");
-  /*
-          4
+  Delete 1
+           4
         /
       0
        \
         3
+   0
   */
 
   freeTree(root);

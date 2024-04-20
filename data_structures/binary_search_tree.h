@@ -13,5 +13,6 @@ void insertNode(Node **node, int value);
 void deleteNode(Node **node, int value);
 Node *searchNode(Node *root, int value);
 Node *nonRecursiveSearchNode(Node *root, int value);
+Node *findNext(Node *root, int value);
 
 #endif // BINARY_SEARCH_TREE_H
