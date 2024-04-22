@@ -49,6 +49,7 @@ void insertNode(Node **root, int value) {
   while (current) {
     if (value == current->value) {
       // repeated value, ignore
+      free(new_node);
       return;
     }
 
@@ -98,7 +99,23 @@ Node *nonRecursiveSearchNode(Node *root, int value) {
 
 Node *findNext(Node *root, int value) {
   // O(log n)
-  // find the smallest key in the data structure that is greater than value
+  // find the smallest value in the BST that is greater than value
+  Node *current = root;
+  Node *next = NULL;
+  while (current) {
+    if (current->value <= value) {
+      // no node in the left subtree will be > value
+      // so we can trim here
+      current = current->right;
+    } else {
+      // check if it's the smallest we found so far
+      if (!next || (current->value < next->value)) {
+        next = current;
+      }
+      current = current->left;
+    }
+  }
+  return next;
 }
 
 void deleteNode(Node **root, int value) {
@@ -137,7 +154,7 @@ void deleteNode(Node **root, int value) {
     if (value < parent->value) {
       parent->left = current->left;
     } else {
-      parent->left = current->left;
+      parent->right = current->left;
     }
   } else {
     // two children case
@@ -199,6 +216,11 @@ int main() {
   printf("Insert repeated 6\n");
   insertNode(&root, 6);
   printTree(root);
+  printf("\n");
+
+  printf("Find next to 1\n");
+  Node *next = findNext(root, 1);
+  printTree(next);
   printf("\n");
 
   int delete_values[] = {7, 5, 6, 2, 1};
