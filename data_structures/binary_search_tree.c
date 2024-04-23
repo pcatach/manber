@@ -235,24 +235,28 @@ int main() {
     insertNode(&root, values[i]);
   }
 
+  if (root->value != 4)
+    exit(1);
   printTree(root);
   printf("\n");
 
-  int search_values[] = {2, 7};
-  for (int i = 0; i < 2; i++) {
-    printf("Search for %d\n", search_values[i]);
-    Node *found = searchNode(root, search_values[i]);
-    printTree(found);
-    printf("\n");
-  }
+  printf("Search for value\n");
+  Node *found = searchNode(root, 2);
+  if (found->value != 2)
+    exit(2);
+  printf("Search for non existing value \n");
+  found = searchNode(root, 7);
+  if (found != NULL)
+    exit(2);
 
-  int non_recursive_search_values[] = {5, 8};
-  for (int i = 0; i < 2; i++) {
-    printf("Non-recursive search for %d\n", non_recursive_search_values[i]);
-    Node *found = nonRecursiveSearchNode(root, non_recursive_search_values[i]);
-    printTree(found);
-    printf("\n");
-  }
+  printf("Non-recursive search for value\n");
+  found = nonRecursiveSearchNode(root, 5);
+  if (found->value != 5)
+    exit(2);
+  printf("Non-recursive search for non existing value \n");
+  found = searchNode(root, 8);
+  if (found != NULL)
+    exit(2);
 
   printf("Insert repeated 6\n");
   insertNode(&root, 6);
@@ -261,18 +265,18 @@ int main() {
 
   printf("Find next to 1\n");
   Node *next = findNext(root, 1);
-  printTree(next);
-  printf("\n");
+  if (next->value != 2)
+    exit(2);
 
   printf("Find 3rd next to 2\n");
   Node *thirdNextToTwo = findNextK(root, 2, 3);
-  printTree(thirdNextToTwo);
-  printf("\n");
+  if (thirdNextToTwo->value != 5)
+    exit(2);
 
   printf("Find the 4th smallest value\n");
   Node *fourthSmallest = findSmallest(root, 4);
-  printTree(fourthSmallest);
-  printf("\n");
+  if (fourthSmallest->value != 2)
+    exit(2);
 
   int delete_values[] = {7, 5, 6, 2, 1};
   for (int i = 0; i < 5; i++) {
