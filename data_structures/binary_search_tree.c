@@ -1,5 +1,9 @@
 /*
-Chapter 4, exercises 3, 4, 15, 16
+Chapter 4, exercises 3, 4, 15, 16, 17
+
+Obs: many of these data structures could be implemented as AVL trees
+to keep worst case O(log n), but that would make this code much harder
+to follow.
 */
 
 #include "binary_search_tree.h"
@@ -118,13 +122,24 @@ Node *findNext(Node *root, int value) {
   return next;
 }
 
-// Node *findNextK(int value, int k) {
-//   // O(log n)
-// }
+Node *findNextK(Node *root, int value, int k) {
+  // O(k *log n)
+  // find the kth smallest value after value
+  Node *current = nonRecursiveSearchNode(root, value);
+  if (!current) {
+    return NULL;
+  }
+  // find kth next node
+  for (int i = 0; i < k; i++) {
+    current = findNext(root, current->value);
+    if (!current)
+      return NULL;
+  }
+  return current;
+}
 
 Node *findSmallest(Node *root, int k) {
-  // O(log n)
-  // (in fact (k+1)*log n)
+  // O(k*log n)
   // find the (k-1)th smallest value in the tree
 
   if (k < 1 || !root) {
@@ -247,6 +262,11 @@ int main() {
   printf("Find next to 1\n");
   Node *next = findNext(root, 1);
   printTree(next);
+  printf("\n");
+
+  printf("Find 3rd next to 2\n");
+  Node *thirdNextToTwo = findNextK(root, 2, 3);
+  printTree(thirdNextToTwo);
   printf("\n");
 
   printf("Find the 4th smallest value\n");
