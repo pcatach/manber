@@ -14,5 +14,7 @@ void deleteNode(Node **node, int value);
 Node *searchNode(Node *root, int value);
 Node *nonRecursiveSearchNode(Node *root, int value);
 Node *findNext(Node *root, int value);
+Node *findNextK(int value, int k);
+Node *findSmallest(Node *root, int k);
 
 #endif // BINARY_SEARCH_TREE_H

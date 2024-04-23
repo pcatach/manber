@@ -1,5 +1,5 @@
 /*
-Chapter 4, exercises 3, 4, 15
+Chapter 4, exercises 3, 4, 15, 16
 */
 
 #include "binary_search_tree.h"
@@ -118,6 +118,32 @@ Node *findNext(Node *root, int value) {
   return next;
 }
 
+// Node *findNextK(int value, int k) {
+//   // O(log n)
+// }
+
+Node *findSmallest(Node *root, int k) {
+  // O(log n)
+  // (in fact (k+1)*log n)
+  // find the (k-1)th smallest value in the tree
+
+  if (k < 1 || !root) {
+    return NULL;
+  }
+
+  // first find the smallest
+  Node *smallest = root;
+  while (smallest->left)
+    smallest = smallest->left;
+
+  // find kth next node
+  Node *ith_smallest = smallest;
+  for (int i = 0; i < k - 1; i++) {
+    ith_smallest = findNext(root, ith_smallest->value);
+  }
+  return ith_smallest;
+}
+
 void deleteNode(Node **root, int value) {
   // Note: we assume the root is never deleted
   // O(log n)
@@ -168,7 +194,7 @@ void deleteNode(Node **root, int value) {
 
     current->value = rightmost->value;
     if (rightmost_parent == current) {
-      rightmost_parent->left = NULL;
+      rightmost_parent->left = rightmost->left;
     } else {
       rightmost_parent->right = rightmost->right;
     }
@@ -185,12 +211,12 @@ int main() {
       2       5
      / \       \
     0   3       6
-     \
-      1
+   / \
+ -1   1
   */
   Node *root = NULL;
-  int values[] = {4, 2, 5, 6, 3, 0, 1};
-  for (int i = 0; i < 7; i++) {
+  int values[] = {4, 2, 5, 6, 3, 0, 1, -1};
+  for (int i = 0; i < 8; i++) {
     insertNode(&root, values[i]);
   }
 
@@ -223,6 +249,11 @@ int main() {
   printTree(next);
   printf("\n");
 
+  printf("Find the 4th smallest value\n");
+  Node *fourthSmallest = findSmallest(root, 4);
+  printTree(fourthSmallest);
+  printf("\n");
+
   int delete_values[] = {7, 5, 6, 2, 1};
   for (int i = 0; i < 5; i++) {
     printf("Delete %d\n", delete_values[i]);
@@ -238,29 +269,30 @@ int main() {
       2       6
      / \
     0   3
-     \
-      1
+   / \
+  -1  1
   Delete 6
           4
         /
       2
      / \
     0   3
-     \
-      1
+   / \
+  -1  1
   Delete 2
           4
         /
       1
      / \
     0   3
+   /
+  -1
   Delete 1
            4
         /
       0
-       \
-        3
-   0
+     / \
+   -1   3
   */
 
   freeTree(root);
